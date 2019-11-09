@@ -300,8 +300,11 @@ class CspHtmlWebpackPlugin {
     const styleNonce = this.setNonce($, 'style-src', 'link[rel="stylesheet"]');
 
     // get all shas for script and style tags
-    const scriptShas = this.getShas($, 'script-src', 'script:not([src])');
-    const styleShas = this.getShas($, 'style-src', 'style:not([href])');
+    const scriptShas = [
+      ...this.getShas($, 'script-src', 'script:not([src])'),
+      ...$('script[integrity]').map((i, element) => `'${$(element).attr('integrity')}'`).get()
+    ]
+    const styleShas = this.getShas($, 'style-src', 'style:not([href])')
 
     // build the policy into the context attr of the csp meta tag
     metaTag.attr(
